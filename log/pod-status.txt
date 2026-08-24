@@ -15,10 +15,13 @@ spec:
   replicas: 1
 status:
   conditions:
-  - type: Available
-    status: "True"
-    reason: AllGroupsReady
+  - .....
+  - lastTransitionTime: "2026-08-24T12:02:02Z"
     message: All replicas are ready
+    reason: AllGroupsReady
+    status: "True"
+    type: Available
+  hpaPodSelector: leaderworkerset.sigs.k8s.io/name=vllm-nccl-preflight,leaderworkerset.sigs.k8s.io/worker-index=0
   readyReplicas: 1
   replicas: 1
   updatedReplicas: 1
