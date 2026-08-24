@@ -1,0 +1,95 @@
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: vllm-nccl-preflight
+spec:
+  replicas: 1
+  startupPolicy: LeaderCreated
+  leaderWorkerTemplate:
+    size: 2
+    restartPolicy: None
+    workerTemplate:
+      metadata:
+        labels:
+          app: vllm-nccl-preflight
+      spec:
+        terminationGracePeriodSeconds: 5
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: zestu.io/gpu.model
+                  operator: In
+                  values:
+                  - NVIDIA-GeForce-RTX-5090
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: vllm-nccl-preflight
+              topologyKey: kubernetes.io/hostname
+
+        volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 10Gi
+
+        initContainers:
+        - name: nccl-preflight
+          image: harbor.rundaocloud.com/vllm/vllm-openai:v0.17.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-lc"]
+          args:
+          - |
+            set -eu
+            script=/vllm-workspace/benchmarks/kernels/benchmark_fused_collective.py
+
+            # v0.17.0 uses global RANK as the CUDA ordinal. Each Pod has one GPU.
+            sed -i \
+              -e 's/device = torch.device(f"cuda:{rank}")/device = torch.device("cuda:0")/' \
+              -e 's/FLASHINFER_BACKENDS = \["trtllm", "mnnvl"\]/FLASHINFER_BACKENDS = []/' \
+              "$script"
+
+            python3 -m pip install --quiet pandas
+            nvidia-smi
+            echo "rank=${LWS_WORKER_INDEX} master=${LWS_LEADER_ADDRESS}"
+
+            exec timeout -k 10s 90s torchrun \
+              --nnodes="${LWS_GROUP_SIZE}" \
+              --node_rank="${LWS_WORKER_INDEX}" \
+              --nproc_per_node=1 \
+              --master_addr="${LWS_LEADER_ADDRESS}" \
+              --master_port=29500 \
+              "$script" \
+              --num-tokens 128 512 2048 \
+              --quant-modes none \
+              --no-residual \
+              --no-oneshot \
+              --warmup 3 \
+              --trials 10
+          env:
+          - name: NCCL_DEBUG
+            value: INFO
+          - name: NCCL_DEBUG_SUBSYS
+            value: INIT,NET
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+          volumeMounts:
+          - name: dshm
+            mountPath: /dev/shm
+
+        containers:
+        - name: workload
+          image: harbor.rundaocloud.com/vllm/vllm-openai:v0.17.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-lc"]
+          args:
+          - |
+            echo "NCCL preflight passed; replace this with vLLM startup."
+            exec tail -f /dev/null
+          resources:
+            limits:
+              nvidia.com/gpu: "1"

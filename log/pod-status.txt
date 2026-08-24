@@ -1,0 +1,24 @@
+Captured: 2026-08-24 (Asia/Shanghai)
+Namespace: peter
+LWS: vllm-nccl-preflight
+
+$ kubectl -n peter get po -o wide
+NAME                                      READY   STATUS    AGE   IP               NODE
+vllm-nccl-preflight-0                     1/1     Running   64s   172.16.8.166     gpu-10-125-2-62
+vllm-nccl-preflight-0-1                   1/1     Running   61s   172.16.247.156   gpu-10-125-2-51
+
+$ kubectl -n peter get lws vllm-nccl-preflight -o yaml (status excerpt)
+spec:
+  leaderWorkerTemplate:
+    restartPolicy: None
+    size: 2
+  replicas: 1
+status:
+  conditions:
+  - type: Available
+    status: "True"
+    reason: AllGroupsReady
+    message: All replicas are ready
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1

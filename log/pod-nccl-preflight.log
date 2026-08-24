@@ -1,0 +1,35 @@
+Captured: 2026-08-24 (Asia/Shanghai)
+Pod: vllm-nccl-preflight-0 (rank 0)
+Container: nccl-preflight
+
+The full command was run with vLLM v0.17.0, one GPU per Pod, and
+torchrun --nnodes=2 --nproc_per_node=1.
+
+NCCL evidence:
+
+  NCCL INFO NCCL version 2.27.5+cuda12.9
+  NCCL INFO NET/IB : Using [0]mlx5_0:1/RoCE [1]mlx5_1:1/RoCE [2]mlx5_2:1/RoCE [3]mlx5_3:1/RoCE [RO]
+  NCCL INFO Using network IB
+  NCCL INFO ncclCommInitRank ... rank 0 nranks 2 ... Init COMPLETE
+  NCCL INFO comm ... rank 0 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
+
+Benchmark evidence (standard vLLM all-reduce path):
+
+  Results: num_tokens=128, hidden_dim=8192, dtype=torch.bfloat16, residual=no
+    standard_allreduce_rmsnorm_native_compiled  0.303 ms
+
+  Results: num_tokens=512, hidden_dim=8192, dtype=torch.bfloat16, residual=no
+    standard_allreduce_rmsnorm_native_compiled  0.965 ms
+
+  Results: num_tokens=2048, hidden_dim=8192, dtype=torch.bfloat16, residual=no
+    standard_allreduce_rmsnorm_native_compiled  3.423 ms
+
+Interpretation:
+
+  - The two Pods formed a two-rank, two-node NCCL communicator over RoCE/IB.
+  - GPU Direct RDMA was reported as disabled; this run therefore does not
+    claim GPU-direct RDMA performance.
+  - The v0.17.0 run also emitted a non-fatal FlashInfer workspace warning for
+    MNNVL; the standard path still completed. The demo YAML patches the v0.17.0
+    backend list to empty before running, so this optional path is excluded in
+    repeat runs.
