@@ -2,6 +2,361 @@ Captured: 2026-08-24 (Asia/Shanghai)
 Pod: vllm-nccl-preflight-0 (rank 0)
 Container: nccl-preflight
 
+
+
+
+
+
+```
+cloudshell-worker-wvwvh5qnpz:~# kubectl -n peter logs -f   vllm-nccl-preflight-0   -c nccl-preflight
+395:    device = torch.device(f"cuda:{torch.cuda.current_device()}")
+986:    device = torch.device("cuda:0")
+Mon Aug 24 12:01:07 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.57.08              Driver Version: 575.57.08      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 5090        Off |   00000000:D8:00.0 Off |                  N/A |
+| 56%   28C    P8             24W /  575W |       0MiB /  32607MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+Collecting pandas
+  Downloading pandas-3.0.5-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+Requirement already satisfied: numpy>=1.26.0 in /usr/local/lib/python3.12/dist-packages (from pandas) (2.2.6)
+Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas) (2.9.0.post0)
+Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.2->pandas) (1.17.0)
+Downloading pandas-3.0.5-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (11.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.0/11.0 MB 21.0 MB/s  0:00:00
+Installing collected packages: pandas
+Successfully installed pandas-3.0.5
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+start----I'm 0--will connect master vllm-nccl-preflight-0.vllm-nccl-preflight.peter--
+<frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+<frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+INFO 08-24 12:01:40 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 08-24 12:01:40 [vllm.py:747] Asynchronous scheduling is enabled.
+INFO 08-24 12:01:40 [parallel_state.py:1393] world_size=-1 rank=-1 local_rank=-1 distributed_init_method=env:// backend=nccl
+INFO 08-24 12:01:42 [pynccl.py:111] vLLM is using nccl==2.27.5
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO cudaDriverVersion 12090
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NCCL version 2.27.5+cuda12.9
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so. 
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO dlvsym failed on mlx5dv_get_data_direct_sysfs_path - /usr/lib/x86_64-linux-gnu/libmlx5.so: undefined symbol: mlx5dv_get_data_direct_sysfs_path, version MLX5_1.25 version MLX5_1.25
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO dlvsym failed on mlx5dv_reg_dmabuf_mr - /usr/lib/x86_64-linux-gnu/libmlx5.so: undefined symbol: mlx5dv_reg_dmabuf_mr, version MLX5_1.25 version MLX5_1.25
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB: [0] mlx5_0:uverbs0:1/RoCE provider=Mlx5 speed=25000 context=0x3c696c20 pciPath=/sys/devices/pci0000:c7/0000:c7:05.0/0000:ca:00.0 ar=0
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : Made virtual device [0] name=mlx5_0 speed=25000 ndevs=1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB: [1] mlx5_1:uverbs1:1/RoCE provider=Mlx5 speed=25000 context=0x3c6d8230 pciPath=/sys/devices/pci0000:c7/0000:c7:05.0/0000:ca:00.0 ar=0
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : Made virtual device [1] name=mlx5_1 speed=25000 ndevs=1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB: [2] mlx5_2:uverbs2:1/RoCE provider=Mlx5 speed=25000 context=0x3c719840 pciPath=/sys/devices/pci0000:80/0000:80:05.0/0000:81:00.0 ar=0
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : Made virtual device [2] name=mlx5_2 speed=25000 ndevs=1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB: [3] mlx5_3:uverbs3:1/RoCE provider=Mlx5 speed=25000 context=0x3c75ae50 pciPath=/sys/devices/pci0000:80/0000:80:05.0/0000:81:00.0 ar=0
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : Made virtual device [3] name=mlx5_3 speed=25000 ndevs=1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : Using [0]mlx5_0:1/RoCE [1]mlx5_1:1/RoCE [2]mlx5_2:1/RoCE [3]mlx5_3:1/RoCE [RO]; OOB eth0:172.16.8.166<0>
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Initialized NET plugin IB
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Assigned NET plugin IB to comm
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Using network IB
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO ncclCommInitRank comm 0x36073e50 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId d8000 commId 0xff42c829e2c5d1ef - Init START
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO RAS client listening socket at ::1<28028>
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 0 'mlx5_0'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 1 'mlx5_1'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 2 'mlx5_2'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 3 'mlx5_3'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : Made virtual device [4] name=mlx5_0+mlx5_1 speed=50000 ndevs=2
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : Made virtual device [5] name=mlx5_2+mlx5_3 speed=50000 ndevs=2
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 4 'mlx5_0+mlx5_1'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 5 'mlx5_2+mlx5_3'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Setting affinity for GPU 0 to 32-63,96-127
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO comm 0x36073e50 rank 0 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 00/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 01/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 02/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 03/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] -1/-1/-1->0->1 [3] -1/-1/-1->0->1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO P2P Chunksize set to 131072
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so. 
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO [Proxy Service] Device 0 CPU core 37
+vllm-nccl-preflight-0:84:302 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 63
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO 4 coll channels, 4 collnet channels, 0 nvls channels, 4 p2p channels, 2 p2p channels per peer
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO CC Off, workFifoBytes 1048576
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so. Using internal tuner plugin.
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO ncclCommInitRank comm 0x36073e50 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId d8000 commId 0xff42c829e2c5d1ef - Init COMPLETE
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Init timings - ncclCommInitRank: rank 0 nranks 2 total 0.62 (kernels 0.36, alloc 0.09, bootstrap 0.15, allgathers 0.00, topo 0.01, graphs 0.00, connections 0.00, rest 0.00)
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy recv connection 0 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f10004f40
+vllm-nccl-preflight-0:84:304 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 99
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 00/0 : 1[0] -> 0[0] [receive] via NET/IB/5
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy recv connection 1 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f10004fb8
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 01/0 : 1[0] -> 0[0] [receive] via NET/IB/4
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy recv connection 2 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f10005030
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 02/0 : 1[0] -> 0[0] [receive] via NET/IB/5
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy recv connection 3 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f100050a8
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 03/0 : 1[0] -> 0[0] [receive] via NET/IB/4
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy send connection 4 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f10005120
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[0] [send] via NET/IB/5
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy send connection 5 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f10005198
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[0] [send] via NET/IB/4
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy send connection 6 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f10005210
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[0] [send] via NET/IB/5
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO New proxy send connection 7 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1f10005288
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[0] [send] via NET/IB/4
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 0 Port 1 qpn 184 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0xb190 fifoLkey=0xb190
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 0 Port 1 qpn 184 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 1 Port 1 qpn 440 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x47379 fifoLkey=0x47379
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 1 Port 1 qpn 440 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 2 Port 1 qpn 186 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0xae8d fifoLkey=0xae8d
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 2 Port 1 qpn 186 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 3 Port 1 qpn 442 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x48185 fifoLkey=0x48185
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 3 Port 1 qpn 442 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 0 Port 1 qpn 187 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0xcfae fifoLkey=0xcfae
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 0 Port 1 qpn 187 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 1 Port 1 qpn 443 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x4868d fifoLkey=0x4868d
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 1 Port 1 qpn 443 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 2 Port 1 qpn 187 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x13716 fifoLkey=0x13716
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 2 Port 1 qpn 187 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 3 Port 1 qpn 443 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x4e4ea fifoLkey=0x4e4ea
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO NET/IB: IbDev 3 Port 1 qpn 443 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:301 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:303 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 0
+WARNING 08-24 12:01:43 [symm_mem.py:67] SymmMemCommunicator: Device capability 12.0 not supported, communicator is not available.
+WARNING 08-24 12:01:43 [custom_all_reduce.py:92] Custom allreduce is disabled because this process group spans across nodes.
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Assigned NET plugin IB to comm
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Using network IB
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO ncclCommInitRank comm 0x3d77fbf0 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId d8000 commId 0x51d1086fe715a5fa - Init START
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 0 'mlx5_0'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 1 'mlx5_1'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 2 'mlx5_2'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 3 'mlx5_3'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 4 'mlx5_0+mlx5_1'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 5 'mlx5_2+mlx5_3'
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Setting affinity for GPU 0 to 32-63,96-127
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO comm 0x3d77fbf0 rank 0 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 00/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 01/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 02/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Channel 03/04 : 0 1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] -1/-1/-1->0->1 [3] -1/-1/-1->0->1
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO P2P Chunksize set to 131072
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO [Proxy Service] Device 0 CPU core 60
+vllm-nccl-preflight-0:84:334 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 53
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO 4 coll channels, 4 collnet channels, 0 nvls channels, 4 p2p channels, 2 p2p channels per peer
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO CC Off, workFifoBytes 1048576
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO ncclCommInitRank comm 0x3d77fbf0 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId d8000 commId 0x51d1086fe715a5fa - Init COMPLETE
+vllm-nccl-preflight-0:84:84 [0] NCCL INFO Init timings - ncclCommInitRank: rank 0 nranks 2 total 0.08 (kernels 0.00, alloc 0.00, bootstrap 0.00, allgathers 0.00, topo 0.01, graphs 0.06, connections 0.00, rest 0.00)
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy recv connection 0 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea4004f40
+vllm-nccl-preflight-0:84:336 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 51
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 00/0 : 1[0] -> 0[0] [receive] via NET/IB/5
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy recv connection 1 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea4004fb8
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 01/0 : 1[0] -> 0[0] [receive] via NET/IB/4
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy recv connection 2 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea4005030
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 02/0 : 1[0] -> 0[0] [receive] via NET/IB/5
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy recv connection 3 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea40050a8
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 03/0 : 1[0] -> 0[0] [receive] via NET/IB/4
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy send connection 4 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea4005120
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[0] [send] via NET/IB/5
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy send connection 5 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea4005198
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[0] [send] via NET/IB/4
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy send connection 6 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea4005210
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[0] [send] via NET/IB/5
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO New proxy send connection 7 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1ea4005288
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[0] [send] via NET/IB/4
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 2 Port 1 qpn 190 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x14524 fifoLkey=0x14524
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 2 Port 1 qpn 190 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 3 Port 1 qpn 446 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x4f3f2 fifoLkey=0x4f3f2
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 3 Port 1 qpn 446 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 0 Port 1 qpn 190 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x6241 fifoLkey=0x6241
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 0 Port 1 qpn 190 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 1 Port 1 qpn 446 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x4403f fifoLkey=0x4403f
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 1 Port 1 qpn 446 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 2 Port 1 qpn 191 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x15433 fifoLkey=0x15433
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 2 Port 1 qpn 191 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 3 Port 1 qpn 447 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x4fb00 fifoLkey=0x4fb00
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 3 Port 1 qpn 447 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 0 Port 1 qpn 193 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x15332 fifoLkey=0x15332
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 0 Port 1 qpn 193 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 1 Port 1 qpn 449 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x4f9fe fifoLkey=0x4f9fe
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO NET/IB: IbDev 1 Port 1 qpn 449 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:333 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:335 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 0
+INFO 08-24 12:01:44 [parallel_state.py:1715] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank 0, EPLB rank N/A
+Failed to setup FlashInfer workspace (backend=trtllm): [SymmDeviceMemory] Device does not support multicasting.
+ERROR:__main__:Failed to setup FlashInfer workspace (backend=mnnvl): [SymmDeviceMemory] Device does not support multicasting.
+INFO 08-24 12:01:44 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 08-24 12:01:44 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 08-24 12:01:44 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+
+================================================================================
+Results: num_tokens=128, hidden_dim=8192 (input size: 2.00 MB)
+dtype=torch.bfloat16, residual=no, quant_modes=none
+================================================================================
+Operation                                          Time (ms)    Speedup   
+--------------------------------------------------------------------------------
+standard_allreduce__native_rms_norm                0.321        0.94x     
+standard_allreduce__custom_rms_norm                0.296        1.02x     
+standard_allreduce_rmsnorm_native_compiled         0.303        baseline  
+INFO 08-24 12:01:47 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 08-24 12:01:47 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 08-24 12:01:47 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+
+================================================================================
+Results: num_tokens=512, hidden_dim=8192 (input size: 8.00 MB)
+dtype=torch.bfloat16, residual=no, quant_modes=none
+================================================================================
+Operation                                          Time (ms)    Speedup   
+--------------------------------------------------------------------------------
+standard_allreduce__native_rms_norm                1.027        0.94x     
+standard_allreduce__custom_rms_norm                0.972        0.99x     
+standard_allreduce_rmsnorm_native_compiled         0.965        baseline  
+INFO 08-24 12:01:48 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 08-24 12:01:49 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 08-24 12:01:49 [scheduler.py:231] Chunked prefill is enabled with max_num_batched_tokens=2048.
+
+================================================================================
+Results: num_tokens=2048, hidden_dim=8192 (input size: 32.00 MB)
+dtype=torch.bfloat16, residual=no, quant_modes=none
+================================================================================
+Operation                                          Time (ms)    Speedup   
+--------------------------------------------------------------------------------
+standard_allreduce__native_rms_norm                3.871        0.88x     
+standard_allreduce__custom_rms_norm                3.387        1.01x     
+standard_allreduce_rmsnorm_native_compiled         3.423        baseline  
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  return func(*args, **kwargs)
+[rank0]:[W824 12:01:51.258325242 ProcessGroupNCCL.cpp:5138] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Assigned NET plugin IB to comm
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Using network IB
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO ncclCommInitRankConfig comm 0x4424cf00 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId d8000 commId 0xc5dbd993bf8789f - Init START
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 0 'mlx5_0'
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 1 'mlx5_1'
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 2 'mlx5_2'
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 3 'mlx5_3'
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 4 'mlx5_0+mlx5_1'
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO NET/IB : GPU Direct RDMA Disabled for HCA 5 'mlx5_2+mlx5_3'
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Setting affinity for GPU 0 to 32-63,96-127
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO comm 0x4424cf00 rank 0 nRanks 2 nNodes 2 localRanks 1 localRank 0 MNNVL 0
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Channel 00/04 : 0 1
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Channel 01/04 : 0 1
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Channel 02/04 : 0 1
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Channel 03/04 : 0 1
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1 [2] -1/-1/-1->0->1 [3] -1/-1/-1->0->1
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO P2P Chunksize set to 131072
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 0
+vllm-nccl-preflight-0:84:360 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 38
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO [Proxy Service] Device 0 CPU core 125
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO 4 coll channels, 4 collnet channels, 0 nvls channels, 4 p2p channels, 2 p2p channels per peer
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO CC Off, workFifoBytes 1048576
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO ncclCommInitRankConfig comm 0x4424cf00 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId d8000 commId 0xc5dbd993bf8789f - Init COMPLETE
+vllm-nccl-preflight-0:84:358 [0] NCCL INFO Init timings - ncclCommInitRankConfig: rank 0 nranks 2 total 0.10 (kernels 0.00, alloc 0.00, bootstrap 0.00, allgathers 0.00, topo 0.01, graphs 0.07, connections 0.00, rest 0.00)
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy recv connection 0 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e78004f40
+vllm-nccl-preflight-0:84:362 [0] NCCL INFO [Proxy Progress] Device 0 CPU core 108
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 00/0 : 1[0] -> 0[0] [receive] via NET/IB/5
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy recv connection 1 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e78004fb8
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 01/0 : 1[0] -> 0[0] [receive] via NET/IB/4
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy recv connection 2 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e78005030
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 02/0 : 1[0] -> 0[0] [receive] via NET/IB/5
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy recv connection 3 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e780050a8
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 03/0 : 1[0] -> 0[0] [receive] via NET/IB/4
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy send connection 4 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e78005120
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 00/0 : 0[0] -> 1[0] [send] via NET/IB/5
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy send connection 5 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e78005198
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 01/0 : 0[0] -> 1[0] [send] via NET/IB/4
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy send connection 6 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e78005210
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 02/0 : 0[0] -> 1[0] [send] via NET/IB/5
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO New proxy send connection 7 from local rank 0, transport 2
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected to proxy localRank 0 -> connection 0x7f1e78005288
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Channel 03/0 : 0[0] -> 1[0] [send] via NET/IB/4
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 2 Port 1 qpn 196 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x17150 fifoLkey=0x17150
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 2 Port 1 qpn 196 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 3 Port 1 qpn 452 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x51312 fifoLkey=0x51312
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 3 Port 1 qpn 452 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 0 Port 1 qpn 196 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x1704f fifoLkey=0x1704f
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 0 Port 1 qpn 196 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 1 Port 1 qpn 452 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x50b10 fifoLkey=0x50b10
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 1 Port 1 qpn 452 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 2 Port 1 qpn 199 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x18e6d fifoLkey=0x18e6d
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 2 Port 1 qpn 199 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 5 IbDev 3 Port 1 qpn 455 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x52d2c fifoLkey=0x52d2c
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 3 Port 1 qpn 455 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 0 Port 1 qpn 199 mtu 3 GID 3 (0/3E027D0AFFFF0000) fifoRkey=0x17e5d fifoLkey=0x17e5d
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 0 Port 1 qpn 199 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: NCCL Dev 4 IbDev 1 Port 1 qpn 455 mtu 3 GID 3 (0/3E217D0AFFFF0000) fifoRkey=0x51519 fifoLkey=0x51519
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO NET/IB: IbDev 1 Port 1 qpn 455 query_ece={supported=1, vendor_id=0x15b3, options=0x0, comp_mask=0x0}
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO Call to ibv_set_ece not supported
+vllm-nccl-preflight-0:84:361 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 0
+[rank0]:[W824 12:01:52.459692765 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+vllm-nccl-preflight-0:84:371 [0] NCCL INFO socketProgressOpt: abort called
+vllm-nccl-preflight-0:84:371 [0] NCCL INFO misc/socket.cc:64 -> 3
+vllm-nccl-preflight-0:84:371 [0] NCCL INFO misc/socket.cc:81 -> 3
+vllm-nccl-preflight-0:84:371 [0] NCCL INFO misc/socket.cc:863 -> 3
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO socketProgressOpt: abort called
+vllm-nccl-preflight-0:84:359 [0] NCCL INFO misc/socket.cc:915 -> 3
+vllm-nccl-preflight-0:84:371 [0] NCCL INFO comm 0x4424cf00 rank 0 nranks 2 cudaDev 0 busId d8000 - Abort COMPLETE
+```
+
+
+
+
+
+
+
+
 The full command was run with vLLM v0.17.0, one GPU per Pod, and
 torchrun --nnodes=2 --nproc_per_node=1.
 
