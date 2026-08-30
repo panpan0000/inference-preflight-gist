@@ -5,6 +5,8 @@ metadata:
 spec:
   replicas: 1
   startupPolicy: LeaderCreated
+  networkConfig:
+    subdomainPolicy: Shared
   leaderWorkerTemplate:
     size: 2
     restartPolicy: None
@@ -21,7 +23,13 @@ spec:
               - matchExpressions:
                 - key: zestu.io/gpu.model
                   operator: In
-                  values: [NVIDIA-GeForce-RTX-5090]
+                  values:
+                  - NVIDIA-GeForce-RTX-5090
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                  - gpu-10-125-2-54
+                  - gpu-10-125-1-25
           podAntiAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
@@ -39,42 +47,83 @@ spec:
             defaultMode: 0400
         initContainers:
         - name: nccl-preflight
-          image: ghcr.io/coreweave/nccl-tests:13.0.2-devel-ubuntu22.04-nccl2.30.4-1-2eedd7c
-          command: ["/bin/bash", "-lc"]
+          image: ghcr.io/coreweave/nccl-tests:12.9.2-devel-ubuntu22.04-nccl2.31.2-1-ee0d4d1
+          command:
+          - /bin/bash
+          - -lc
           args:
           - |
             set -euo pipefail
             mkdir -p /run/sshd
             /usr/sbin/sshd
+
             leader_host="${LWS_LEADER_ADDRESS}"
-            worker_host="${leader_host%%.*}-1.${leader_host#*.}"
-            ssh_opts=(-i /root/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null)
+            leader_name="${leader_host%%.*}"
+            dns_suffix="${leader_host#*.}"
+            worker_host="${leader_name}-1.${dns_suffix}"
+            echo "LWS_WORKER_INDEX=${LWS_WORKER_INDEX}"
+            echo "leader=${leader_host}"
+            echo "worker=${worker_host}"
+            getent hosts "${leader_host}" "${worker_host}"
+            command -v ibdev2netdev >/dev/null && ibdev2netdev || true
+            command -v ibv_devinfo >/dev/null && ibv_devinfo || true
+
+            ssh_opts=(
+              -i /root/.ssh/id_ed25519
+              -o BatchMode=yes
+              -o StrictHostKeyChecking=no
+              -o UserKnownHostsFile=/dev/null
+            )
 
             if [ "${LWS_WORKER_INDEX}" = "0" ]; then
               finish() {
                 rc=$?
-                ssh "${ssh_opts[@]}" "root@${worker_host}" "echo ${rc} > /tmp/nccl-preflight.rc" || true
+                ssh "${ssh_opts[@]}" "root@${worker_host}" \
+                  "echo ${rc} > /tmp/nccl-preflight.rc" || true
                 exit "${rc}"
               }
               trap finish EXIT
+
               for i in $(seq 1 60); do
                 ssh "${ssh_opts[@]}" "root@${worker_host}" true && break
                 sleep 1
               done
               ssh "${ssh_opts[@]}" "root@${worker_host}" true
-              mpirun -np 2 --host "${leader_host},${worker_host}" --bind-to none \
-                --mca plm_rsh_agent "ssh -i /root/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-                -x NCCL_DEBUG -x NCCL_DEBUG_SUBSYS -x LD_LIBRARY_PATH -x PATH \
-                /opt/nccl_tests/build/all_reduce_perf -b 8M -e 1G -f 2 -g 1 -w 3 -n 10
+
+              mpirun \
+                --allow-run-as-root \
+                --mca orte_keep_fqdn_hostnames 1 \
+                --mca plm_rsh_agent \
+                  "ssh -i /root/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+                -np 2 \
+                --host "${leader_host},${worker_host}" \
+                --bind-to none \
+                -x OMPI_ALLOW_RUN_AS_ROOT \
+                -x OMPI_ALLOW_RUN_AS_ROOT_CONFIRM \
+                -x NCCL_DEBUG \
+                -x NCCL_DEBUG_SUBSYS \
+                -x NCCL_IB_RETRY_CNT \
+                -x LD_LIBRARY_PATH \
+                -x PATH \
+                /opt/nccl_tests/build/all_reduce_perf \
+                -b 8M -e 1G -f 2 -g 1 -w 3 -n 10
             else
-              timeout 240s sh -c 'until test -f /tmp/nccl-preflight.rc; do sleep 1; done'
+              timeout 240s sh -c \
+                'until test -f /tmp/nccl-preflight.rc; do sleep 1; done'
               exit "$(cat /tmp/nccl-preflight.rc)"
             fi
           env:
+          - name: OMPI_ALLOW_RUN_AS_ROOT
+            value: "1"
+          - name: OMPI_ALLOW_RUN_AS_ROOT_CONFIRM
+            value: "1"
           - name: NCCL_DEBUG
             value: INFO
           - name: NCCL_DEBUG_SUBSYS
             value: INIT,NET
+          # Fail fast on a broken IB/RoCE path; do not disable IB and call TCP a pass.
+          - name: NCCL_IB_RETRY_CNT
+            value: "7"
           resources:
             limits:
               nvidia.com/gpu: "1"
@@ -87,8 +136,11 @@ spec:
         containers:
         - name: workload
           image: harbor.rundaocloud.com/vllm/vllm-openai:v0.17.0
-          command: ["/bin/bash", "-lc"]
-          args: ["echo NCCL preflight passed; exec tail -f /dev/null"]
+          command:
+          - /bin/bash
+          - -lc
+          args:
+          - echo "NCCL preflight passed"; exec tail -f /dev/null
           resources:
             limits:
               nvidia.com/gpu: "1"

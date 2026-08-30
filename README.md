@@ -15,7 +15,8 @@ workload container starts.
 - [examples/lws-vllm-nccl-preflight.yaml](examples/lws-vllm-nccl-preflight.yaml) —
   minimal two-Pod, one-GPU-per-Pod LWS demo.
 - [examples/lws-nccl-tests-preflight.yaml](examples/lws-nccl-tests-preflight.yaml) —
-  `mpirun` from LWS leader init-container to its worker init-container.
+  `mpirun` from the LWS leader init-container to its worker init-container,
+  pinned to the two tested RTX 5090 nodes.
 - [examples/dcgmi-remote-hostengine.yaml](examples/dcgmi-remote-hostengine.yaml) —
   connect `dcgmi` to the same node's standalone hostengine.
 - [examples/privileged-dcgm-diag.yaml](examples/privileged-dcgm-diag.yaml) —
@@ -60,9 +61,18 @@ kubectl -n peter apply -f examples/lws-nccl-tests-preflight.yaml
 ```
 
 The worker init-container runs `sshd`; the leader waits for it, uses `mpirun`
-to launch two ranks, then returns the same exit code to the worker. `Results:`
-with `#wrong 0` is the success signal. Replace `ghcr.io` with your mirror if
-needed.
+to launch two ranks, then returns the same exit code to the worker. The YAML
+keeps FQDN hostnames for Open MPI and prints `ibdev2netdev`/`ibv_devinfo` before
+the test. `Results:` with `#wrong 0` is the success signal. Replace `ghcr.io`
+with your mirror if needed.
+
+If NCCL reports `ibv_modify_qp failed with 110 ... INIT -> RTR`, LWS rendezvous
+and SSH have already succeeded; the selected RoCE/IB HCA/GID path between the
+nodes is timing out. Check the printed HCA mapping and node fabric/VLAN/ACL,
+then set `NCCL_IB_HCA` only after selecting an HCA present and reachable on
+both nodes. `NCCL_IB_DISABLE=1` is useful only as a separate TCP control test;
+it must not be treated as an IB preflight pass. The example sets
+`NCCL_IB_RETRY_CNT=7` so a broken path fails promptly.
 
 ## Why the YAML contains two small runtime patches
 
