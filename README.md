@@ -14,6 +14,14 @@ workload container starts.
   NCCL and ib_write_bw checks inside LWS init containers.
 - [examples/lws-vllm-nccl-preflight.yaml](examples/lws-vllm-nccl-preflight.yaml) —
   minimal two-Pod, one-GPU-per-Pod LWS demo.
+- [examples/nccl-tests-mpijob.yaml](examples/nccl-tests-mpijob.yaml) — two-node
+  `all_reduce_perf`; requires MPI Operator.
+- [examples/dcgmi-remote-hostengine.yaml](examples/dcgmi-remote-hostengine.yaml) —
+  connect `dcgmi` to the same node's standalone hostengine.
+- [examples/privileged-dcgm-diag.yaml](examples/privileged-dcgm-diag.yaml) —
+  isolated privileged DCGM level-1 diagnostic.
+- [examples/lws-multi-init-results.yaml](examples/lws-multi-init-results.yaml) —
+  multiple init images and a final per-Pod result gate.
 - [log/](log/) — captured Pod placement, LWS status, and relevant NCCL output.
 
 ## Run the demo
@@ -52,10 +60,38 @@ The init container also mounts a 10 GiB memory-backed `/dev/shm`; without it,
 NCCL can fail with `No space left on device` while creating its shared-memory
 segments.
 
+## DCGM access
+
+GPU Operator normally runs DCGM Exporter with an embedded hostengine. Port
+`9400` is Prometheus HTTP, not a `dcgmi` endpoint. The captured exporter has no
+`DCGM_REMOTE_HOSTENGINE_INFO`, so `dcgmi` cannot connect to that Pod.
+
+For metrics only:
+
+```bash
+kubectl -n gpu-operator port-forward pod/nvidia-dcgm-exporter-vrqt4 9400:9400
+curl -s http://127.0.0.1:9400/metrics | head
+```
+
+For `dcgmi`, enable GPU Operator's standalone DCGM (`dcgm.enabled=true`). It
+exposes `nv-hostengine` on each node at port `5555`; the example uses
+`status.hostIP` to select the Pod's own node. The remote client is unprivileged;
+only the isolated example that starts its own hostengine uses `privileged: true`.
+Replace public registries with cluster mirrors where required.
+
+## Result scope
+
+An `emptyDir` is shared only by containers in one Pod. It can combine several
+init-container results before a final gate, but it cannot aggregate every Pod
+in an LWS group. Cross-Pod summaries need a leader-side collector or external
+storage.
+
 ## Context
 
 - LWS KEP #813 (preflight for distributed inference): https://github.com/kubernetes-sigs/lws/pull/813
 - Ecosystem prior art — NVIDIA NVSentinel preflight: https://github.com/NVIDIA/NVSentinel/blob/main/docs/configuration/preflight.md
+- NVIDIA DCGM: https://docs.nvidia.com/datacenter/dcgm/latest/
+- NVIDIA nccl-tests: https://github.com/NVIDIA/nccl-tests
 
 ## Status
 

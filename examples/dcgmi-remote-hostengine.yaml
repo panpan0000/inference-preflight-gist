@@ -1,0 +1,29 @@
+# Requires GPU Operator standalone DCGM: dcgm.enabled=true (host port 5555).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dcgmi-client
+spec:
+  restartPolicy: Never
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: zestu.io/gpu.model
+            operator: In
+            values: [NVIDIA-GeForce-RTX-5090]
+  containers:
+  - name: dcgmi
+    image: nvcr.io/nvidia/cloud-native/dcgm:4.1.1-2-ubuntu22.04
+    command: ["/bin/bash", "-lc"]
+    args:
+    - |
+      set -eu
+      dcgmi discovery --host "${HOST_IP}:5555" --list
+      dcgmi modules --host "${HOST_IP}:5555" --list
+    env:
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP

@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dcgm-diag
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      runtimeClassName: nvidia
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: zestu.io/gpu.model
+                operator: In
+                values: [NVIDIA-GeForce-RTX-5090]
+      containers:
+      - name: diag
+        image: nvcr.io/nvidia/cloud-native/dcgm:4.1.1-2-ubuntu22.04
+        securityContext:
+          privileged: true
+        resources:
+          limits:
+            nvidia.com/gpu: "1"
+        command: ["/bin/bash", "-lc"]
+        args:
+        - |
+          set -eu
+          nv-hostengine -n &
+          hostengine_pid=$!
+          trap 'kill "${hostengine_pid}" 2>/dev/null || true' EXIT
+          for i in $(seq 1 20); do
+            dcgmi discovery --list && break
+            sleep 1
+          done
+          dcgmi diag --run 1 --json
