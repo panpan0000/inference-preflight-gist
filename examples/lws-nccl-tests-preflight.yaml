@@ -1,0 +1,94 @@
+apiVersion: leaderworkerset.x-k8s.io/v1
+kind: LeaderWorkerSet
+metadata:
+  name: lws-nccl-tests-preflight
+spec:
+  replicas: 1
+  startupPolicy: LeaderCreated
+  leaderWorkerTemplate:
+    size: 2
+    restartPolicy: None
+    workerTemplate:
+      metadata:
+        labels:
+          app: lws-nccl-tests-preflight
+      spec:
+        terminationGracePeriodSeconds: 5
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: zestu.io/gpu.model
+                  operator: In
+                  values: [NVIDIA-GeForce-RTX-5090]
+          podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: lws-nccl-tests-preflight
+              topologyKey: kubernetes.io/hostname
+        volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+        - name: nccl-ssh
+          secret:
+            secretName: nccl-ssh
+            defaultMode: 0400
+        initContainers:
+        - name: nccl-preflight
+          image: ghcr.io/coreweave/nccl-tests:13.0.2-devel-ubuntu22.04-nccl2.30.4-1-2eedd7c
+          command: ["/bin/bash", "-lc"]
+          args:
+          - |
+            set -euo pipefail
+            mkdir -p /run/sshd
+            /usr/sbin/sshd
+            leader_host="${LWS_LEADER_ADDRESS}"
+            worker_host="${leader_host%%.*}-1.${leader_host#*.}"
+            ssh_opts=(-i /root/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null)
+
+            if [ "${LWS_WORKER_INDEX}" = "0" ]; then
+              finish() {
+                rc=$?
+                ssh "${ssh_opts[@]}" "root@${worker_host}" "echo ${rc} > /tmp/nccl-preflight.rc" || true
+                exit "${rc}"
+              }
+              trap finish EXIT
+              for i in $(seq 1 60); do
+                ssh "${ssh_opts[@]}" "root@${worker_host}" true && break
+                sleep 1
+              done
+              ssh "${ssh_opts[@]}" "root@${worker_host}" true
+              mpirun -np 2 --host "${leader_host},${worker_host}" --bind-to none \
+                --mca plm_rsh_agent "ssh -i /root/.ssh/id_ed25519 -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+                -x NCCL_DEBUG -x NCCL_DEBUG_SUBSYS -x LD_LIBRARY_PATH -x PATH \
+                /opt/nccl_tests/build/all_reduce_perf -b 8M -e 1G -f 2 -g 1 -w 3 -n 10
+            else
+              timeout 240s sh -c 'until test -f /tmp/nccl-preflight.rc; do sleep 1; done'
+              exit "$(cat /tmp/nccl-preflight.rc)"
+            fi
+          env:
+          - name: NCCL_DEBUG
+            value: INFO
+          - name: NCCL_DEBUG_SUBSYS
+            value: INIT,NET
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+          volumeMounts:
+          - name: dshm
+            mountPath: /dev/shm
+          - name: nccl-ssh
+            mountPath: /root/.ssh
+            readOnly: true
+        containers:
+        - name: workload
+          image: harbor.rundaocloud.com/vllm/vllm-openai:v0.17.0
+          command: ["/bin/bash", "-lc"]
+          args: ["echo NCCL preflight passed; exec tail -f /dev/null"]
+          resources:
+            limits:
+              nvidia.com/gpu: "1"

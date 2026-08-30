@@ -14,8 +14,8 @@ workload container starts.
   NCCL and ib_write_bw checks inside LWS init containers.
 - [examples/lws-vllm-nccl-preflight.yaml](examples/lws-vllm-nccl-preflight.yaml) —
   minimal two-Pod, one-GPU-per-Pod LWS demo.
-- [examples/nccl-tests-mpijob.yaml](examples/nccl-tests-mpijob.yaml) — two-node
-  `all_reduce_perf`; requires MPI Operator.
+- [examples/lws-nccl-tests-preflight.yaml](examples/lws-nccl-tests-preflight.yaml) —
+  `mpirun` from LWS leader init-container to its worker init-container.
 - [examples/dcgmi-remote-hostengine.yaml](examples/dcgmi-remote-hostengine.yaml) —
   connect `dcgmi` to the same node's standalone hostengine.
 - [examples/privileged-dcgm-diag.yaml](examples/privileged-dcgm-diag.yaml) —
@@ -47,6 +47,22 @@ completed for 128, 512, and 2048 tokens. See [`log/`](log/) for the evidence.
 
 This is a vLLM-native collective benchmark, not NVIDIA `nccl-tests`
 `all_reduce_perf`; it reports operation latency rather than `algbw`/`busbw`.
+
+## Run the MPI preflight
+
+Create the SSH Secret once, then apply the LWS example:
+
+```bash
+ssh-keygen -q -t ed25519 -N '' -f /tmp/nccl-ssh
+cp /tmp/nccl-ssh.pub /tmp/authorized_keys
+kubectl -n peter create secret generic nccl-ssh --from-file=id_ed25519=/tmp/nccl-ssh --from-file=authorized_keys=/tmp/authorized_keys
+kubectl -n peter apply -f examples/lws-nccl-tests-preflight.yaml
+```
+
+The worker init-container runs `sshd`; the leader waits for it, uses `mpirun`
+to launch two ranks, then returns the same exit code to the worker. `Results:`
+with `#wrong 0` is the success signal. Replace `ghcr.io` with your mirror if
+needed.
 
 ## Why the YAML contains two small runtime patches
 
